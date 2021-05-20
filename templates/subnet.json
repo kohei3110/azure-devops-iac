@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "apiVersion": "2019-11-01"
+    },
+    "parameters": {
+        "generalParam": {
+            "type": "object",
+            "metadata": {
+                "description": "全般的なパラメータ"
+            }
+        },
+        "subnetParam":{
+            "type": "object",
+            "metadata": {
+                "description": "subnet のパラメータ"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "この subnet が紐づく Virtual Network の名前"
+            }
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "この subnet が紐づく Network Security Group の名前"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "[concat(parameters('virtualNetworkName'), '/' ,parameters('subnetParam').name)]",
+            "location": "[parameters('generalParam').deploy.location]",
+            "properties": "[union(parameters('subnetParam').properties,json(concat('{\"networkSecurityGroup\":{\"id\":\"', resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName')), '\"}}')))]"
+        }
+    ],
+    "outputs": {
+        "subnetResourceId": {
+            "type": "string",
+            "value": "[concat(resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName')) ,'/subnets/',parameters('subnetParam').name)]"
+        },
+        "subnetName": {
+            "type": "string",
+            "value": "[concat(parameters('virtualNetworkName') ,'/subnets/',parameters('subnetParam').name)]"
+        }
+    }
+}

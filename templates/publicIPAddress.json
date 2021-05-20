@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "apiVersion": "2019-11-01"
+    },
+    "parameters": {
+        "generalParam": {
+            "type": "object",
+            "metadata": {
+                "description": "全般的なパラメータ"
+            }
+        },
+        "publicIPAddressParam": {
+            "type": "object",
+            "metadata": {
+                "description": "パブリック IP アドレス のパラメータ"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "[parameters('publicIPAddressParam').name]",
+            "location": "[parameters('generalParam').deploy.location]",
+            "sku": {
+                "name": "[parameters('publicIPAddressParam').sku]"
+            },
+            "properties": "[parameters('publicIPAddressParam').properties]"
+        }
+    ],
+    "outputs": {
+        "publicIPAddressResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressParam').name)]"
+        },
+        "publicIPAddressName": {
+            "type": "string",
+            "value": "[parameters('publicIPAddressParam').name]"
+        }
+    }
+}

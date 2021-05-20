@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "apiVersion": "2019-11-01",
+        "pipProperties": "[if(empty(parameters('publicIPAddressResourceId')),parameters('networkInterfaceParam').properties.ipConfigurations.properties,union(parameters('networkInterfaceParam').properties.ipConfigurations.properties, json(concat('{\"publicIPAddress\": {\"id\": \"', parameters('publicIPAddressResourceId'), '\"}}'))))]",
+        "ipConfProperties": "[union(variables('pipProperties'), json(concat('{\"subnet\": {\"id\": \"', parameters('subnetResourceId'), '\"}}')))]"
+    },
+    "parameters": {
+        "generalParam": {
+            "type": "object",
+            "metadata": {
+                "description": "全般的なパラメータ"
+            }
+        },
+        "networkInterfaceParam":{
+            "type": "object",
+            "metadata": {
+                "description": "Network Interface のパラメータ"
+            }
+        },
+        "publicIPAddressResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "この Network Interface に紐づけるパブリック IP アドレスのリソース ID"
+            }
+        },
+        "subnetResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "この Network Interface に紐づけるサブネットのリソース ID"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "[parameters('networkInterfaceParam').name]",
+            "location": "[parameters('generalParam').deploy.location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[parameters('networkInterfaceParam').properties.ipConfigurations.name]",
+                        "properties": "[variables('ipConfProperties')]"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "networkInterfaceResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceParam').name)]"
+        },
+        "networkInterfaceName": {
+            "type": "string",
+            "value": "[parameters('networkInterfaceParam').name]"
+        }
+    }
+}

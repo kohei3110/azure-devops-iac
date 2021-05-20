@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "generalParam":{
+            "value":{
+                "deploy": {
+                    "location": "japaneast"
+                }
+            }
+        },
+        "subnetParam": {
+            "value": {
+                "name": "devops-pipelines-snet001",
+                "properties":{
+                    "addressPrefix": "172.30.0.0/28",
+                    "serviceEndpoints": [
+                        {
+                            "service": "Microsoft.Storage"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

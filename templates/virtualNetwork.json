@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "apiVersion": "2019-11-01"
+    },
+    "parameters": {
+        "generalParam": {
+            "type": "object",
+            "metadata": {
+                "description": "全般的なパラメータ"
+            }
+        },
+        "virtualNetworkParam":{
+            "type": "object",
+            "metadata": {
+                "description": "Virtual Network のパラメータ"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "[parameters('virtualNetworkParam').name]",
+            "location": "[parameters('generalParam').deploy.location]",
+            "properties": "[parameters('virtualNetworkParam').properties]"
+        }
+    ],
+    "outputs": {
+        "virtualNetworkResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkParam').name)]"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[parameters('virtualNetworkParam').name]"
+        }
+    }
+}

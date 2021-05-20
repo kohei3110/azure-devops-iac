@@ -1,0 +1,132 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  armConnectionName: '<service connection name>'
+  subscriptionId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+  resourceGroupName: 'devops-pipelines-rg001'
+  resourceGroupLocation: 'Japan East'
+
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Virtual Network'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/virtualNetwork.json'
+    csmParametersFile: 'parameters/virtualNetwork.json'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'vnetOutputs'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Network Security Group'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/networkSecurityGroup.json'
+    csmParametersFile: 'parameters/networkSecurityGroup.json'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'nsgOutputs'
+
+- task: AzurePowerShell@4
+  displayName: 'Read Outputs'
+  inputs:
+    azureSubscription: $(armConnectionName)
+    scriptType: 'FilePath'
+    scriptPath: 'scripts/readOutputs.ps1'
+    scriptArguments: '''$(vnetOutputs)'' ''$(nsgOutputs)'''
+    azurePowerShellVersion: 'LatestVersion'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Subnet'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/subnet.json'
+    csmParametersFile: 'parameters/subnet.json'
+    overrideParameters: '-virtualNetworkName $(Output_virtualNetworkName) -networkSecurityGroupName $(Output_networkSecurityGroupName)'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'subnetOutputs'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Public IP Address'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/publicIPAddress.json'
+    csmParametersFile: 'parameters/publicIPAddress.json'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'pipOutputs'
+
+- task: AzurePowerShell@4
+  displayName: 'Read Outputs'
+  inputs:
+    azureSubscription: $(armConnectionName)
+    scriptType: 'FilePath'
+    scriptPath: 'scripts/readOutputs.ps1'
+    scriptArguments: '''$(subnetOutputs)'' ''$(pipOutputs)'''
+    azurePowerShellVersion: 'LatestVersion'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Network Interface'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/networkInterface.json'
+    csmParametersFile: 'parameters/networkInterface.json'
+    overrideParameters: '-publicIPAddressResourceId $(Output_publicIPAddressResourceId) -subnetResourceId $(Output_subnetResourceId)'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'nicOutputs'
+
+- task: AzurePowerShell@4
+  displayName: 'Read Outputs'
+  inputs:
+    azureSubscription: $(armConnectionName)
+    ScriptType: 'FilePath'
+    ScriptPath: 'scripts/readOutputs.ps1'
+    ScriptArguments: '''$(nicOutputs)'''
+    azurePowerShellVersion: 'LatestVersion'
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'Create Virtual Machine'
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: $(armConnectionName)
+    subscriptionId: $(subscriptionId)
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: $(resourceGroupName)
+    location: $(resourceGroupLocation)
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/virtualMachine.json'
+    csmParametersFile: 'parameters/virtualMachine.json'
+    overrideParameters: '-networkInterfaceResourceId $(Output_networkInterfaceResourceId)'
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'vmOutputs'
