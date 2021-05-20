@@ -76,7 +76,7 @@ Service Principal を Pipeline から使用するため、Service Connection を
 
 これらは、テストファイルの中で下記のように参照される。
 
-```
+```powershell
 $tenantId = $env:TENANTID
 $subscriptionId = $env:SUBSCRIPTIONID
 $resourceGroupName = "koheisaitolearn"
@@ -92,5 +92,5 @@ Describe "テストのテスト" {
     }
 
     ・・・
-    
+
 ```
