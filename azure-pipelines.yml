@@ -16,4 +16,4 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: 'templates/azuredeploy.json'
     csmParametersFile: 'parameters/azuredeploy.json'
-    deploymentMode: 'Incremental'
+    deploymentMode: 'Incremental' 

@@ -1,0 +1,330 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "alertName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of alert"
+        }
+      },
+      "adminUsername": {
+        "type": "string",
+        "metadata": {
+          "description": "Admin username."
+        }
+      },
+      "adminUserPassword": {
+        "type": "string",
+        "metadata": {
+          "description": "Admin password."
+        }
+      },
+      "status": {
+        "type": "string",
+        "defaultValue": "",
+        "allowedValues": [
+          "Active",
+          "InProgress",
+          "Resolved"
+        ],
+        "metadata": {
+          "description": "Description of alert"
+        }
+      },
+  
+      "dnsLabelPrefix": {
+        "type": "string",
+        "defaultValue": "[toLower(concat(parameters('vmName'),'-', uniqueString(resourceGroup().id, parameters('vmName'))))]",
+        "metadata": {
+          "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+        }
+      },
+  
+      "emailAddress": {
+        "type": "string",
+        "defaultValue": "email@example.com",
+        "metadata": {
+          "description": "Email address where the alerts are sent."
+        }
+      },
+      "emailName": {
+        "type": "string",
+        "defaultValue": "Example",
+        "metadata": {
+          "description": "Email address where the alerts are sent."
+        }
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": {
+          "description": "Location for all resources."
+        }
+      },
+      "OSVersion": {
+        "type": "string",
+        "defaultValue": "2019-Datacenter",
+        "allowedValues": [
+          "2008-R2-SP1",
+          "2012-Datacenter",
+          "2012-R2-Datacenter",
+          "2016-Nano-Server",
+          "2016-Datacenter-with-Containers",
+          "2016-Datacenter",
+          "2019-Datacenter",
+          "2019-Datacenter-Core",
+          "2019-Datacenter-Core-smalldisk",
+          "2019-Datacenter-Core-with-Containers",
+          "2019-Datacenter-Core-with-Containers-smalldisk",
+          "2019-Datacenter-smalldisk",
+          "2019-Datacenter-with-Containers",
+          "2019-Datacenter-with-Containers-smalldisk"
+        ],
+        "metadata": {
+          "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
+        }
+      },
+      "publicIpName": {
+        "type": "string",
+        "defaultValue": "myPublicIP",
+        "metadata": {
+          "description": "Name for the Public IP used to access the Virtual Machine."
+        }
+      },
+  
+      "publicIPAllocationMethod": {
+        "type": "string",
+        "defaultValue": "Dynamic",
+        "allowedValues": [
+          "Dynamic",
+          "Static"
+        ],
+        "metadata": {
+          "description": "Allocation method for the Public IP used to access the Virtual Machine."
+        }
+      },
+      "publicIpSku": {
+        "type": "string",
+        "defaultValue": "Basic",
+        "allowedValues": [
+          "Basic",
+          "Standard"
+        ],
+        "metadata": {
+          "description": "SKU for the Public IP used to access the Virtual Machine."
+        }
+      },
+      "vmName": {
+        "type": "string",
+        "defaultValue": "demoVM",
+        "metadata": {
+          "description": "VM Name."
+        }
+      },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "Standard_D2_v3",
+        "metadata": {
+          "description": "Size of the virtual machine."
+        }
+      }
+    },
+    "variables": {
+      "addressPrefix": "10.0.0.0/16",
+      "nicName": "demoVMNic",
+      "virtualNetworkName": "demoVNET",
+      "subnetName": "demoSubnet",
+      "subnetPrefix": "10.0.0.0/24",
+      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+      "networkSecurityGroupName": "demo-NSG"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Insights/activityLogAlerts",
+        "apiVersion": "2017-04-01",
+        "name": "[parameters('alertName')]",
+        "location": "global",
+        "properties": {
+          "enabled": true,
+          "scopes": [
+            "[subscription().id]"
+          ],
+          "condition": {
+            "allOf": [
+              {
+                "field": "category",
+                "equals": "ResourceHealth"
+              },
+              {
+                "field": "status",
+                "equals": "[parameters('status')]"
+              }
+            ]
+          },
+          "actions": {
+            "actionGroups": [
+              {
+                "actionGroupId": "[resourceId('microsoft.insights/actionGroups','emailActionGroup')]"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Network/virtualNetworks",
+        "apiVersion": "2020-06-01",
+        "name": "[variables('virtualNetworkName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        ],
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "[variables('addressPrefix')]"
+            ]
+          },
+          "subnets": [
+            {
+              "name": "[variables('subnetName')]",
+              "properties": {
+                "addressPrefix": "[variables('subnetPrefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Network/publicIPAddresses",
+        "apiVersion": "2020-06-01",
+        "name": "[parameters('publicIPName')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "[parameters('publicIpSku')]"
+        },
+        "properties": {
+          "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
+          "dnsSettings": {
+            "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "apiVersion": "2020-06-01",
+        "name": "[variables('networkSecurityGroupName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "default-allow-3389",
+              "properties": {
+                "priority": 1000,
+                "access": "Allow",
+                "direction": "Inbound",
+                "destinationPortRange": "3389",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "emailActionGroup",
+        "type": "microsoft.insights/actionGroups",
+        "apiVersion": "2019-06-01",
+        "location": "global",
+        "properties": {
+          "groupShortName": "EAG",
+          "enabled": true,
+          "emailReceivers": [
+            {
+              "name": "[parameters('emailName')]",
+              "emailAddress": "[parameters('emailAddress')]",
+              "useCommonAlertSchema": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Network/networkInterfaces",
+        "apiVersion": "2020-06-01",
+        "name": "[variables('nicName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]",
+          "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+        ],
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "publicIPAddress": {
+                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]"
+                },
+                "subnet": {
+                  "id": "[variables('subnetRef')]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Compute/virtualMachines",
+        "apiVersion": "2020-12-01",
+        "name": "[parameters('vmName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+        ],
+        "properties": {
+          "hardwareProfile": {
+            "vmSize": "[parameters('vmSize')]"
+          },
+          "osProfile": {
+            "computerName": "[parameters('vmName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminUserPassword')]"
+          },
+          "storageProfile": {
+            "imageReference": {
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "[parameters('OSVersion')]",
+              "version": "latest"            
+            },
+            "osDisk": {
+              "createOption": "FromImage",
+              "managedDisk": {
+                "storageAccountType": "StandardSSD_LRS"
+              }
+            },
+            "dataDisks": [
+              {
+                "diskSizeGB": 1023,
+                "lun": 0,
+                "createOption": "Empty"
+              }
+            ]
+          },
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }

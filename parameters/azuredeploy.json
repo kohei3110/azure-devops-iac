@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "alertName": {
+            "value": "ResolvedAlert"
+        },
+        "adminUsername":{
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
+                },
+                "secretName": "adminUsername"
+            }
+        },
+        "adminUserPassword":{
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
+                },
+                "secretName": "adminPassword"
+            }
+        },
+        "status": {
+            "value": "Resolved"
+        },
+        "emailAddress": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
+                },
+                "secretName": "email"
+            }
+        },
+        "emailName": {
+            "value": "Demo"
+        }
+    }
+}
