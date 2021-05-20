@@ -2,6 +2,8 @@
     [Parameter(Mandatory)]
     [string]$clientSecret_s
 )
+# Pester のインストール
+Install-Module -Name Pester -Force -SkipPublisherCheck
 
 $tenantId = $env:TENANTID
 $subscriptionId = $env:SUBSCRIPTIONID
