@@ -6,31 +6,16 @@
             "value": "ResolvedAlert"
         },
         "adminUsername":{
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
-                },
-                "secretName": "adminUsername"
-            }
+            "value": "kohei"
         },
         "adminUserPassword":{
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
-                },
-                "secretName": "adminPassword"
-            }
+            "value": "Kk31108424#5"
         },
         "status": {
             "value": "Resolved"
         },
         "emailAddress": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f/resourceGroups/azure-advisor-alert-group/providers/Microsoft.KeyVault/vaults/azureAdvisorAlertVault"
-                },
-                "secretName": "email"
-            }
+            "value": "koheisaito@microsoft.com"
         },
         "emailName": {
             "value": "Demo"
