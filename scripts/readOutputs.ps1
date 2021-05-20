@@ -9,6 +9,7 @@ $tenantId = $env:TENANTID
 $subscriptionId = $env:SUBSCRIPTIONID
 $resourceGroupName = "koheisaitolearn"
 $clientSecret = $clientSecret_s
+$applicationIdUrl = $env:APPLICATIONIDURL
 
 Describe "テストのテスト" {
 
