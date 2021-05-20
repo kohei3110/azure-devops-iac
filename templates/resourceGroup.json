@@ -4,37 +4,39 @@
     "variables": {
         "apiVersion": "2019-11-01"
     },
-    "parameters": {
-        "generalParam": {
-            "type": "Object",
-            "metadata": {
-                "description": "全般的なパラメータ"
-            }
-        },
-        "resourceGroupParam":{
-            "type": "Object",
-            "metadata": {
-                "description": "リソースグループのパラメータ"
-            }
-        }
-    },
+    // "parameters": {
+    //     "generalParam": {
+    //         "type": "Object",
+    //         "metadata": {
+    //             "description": "全般的なパラメータ"
+    //         }
+    //     },
+    //     "resourceGroupParam":{
+    //         "type": "Object",
+    //         "metadata": {
+    //             "description": "リソースグループのパラメータ"
+    //         }
+    //     }
+    // },
     "resources": [
         {
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "[variables('apiVersion')]",
-            "name": "[parameters('resourceGroupParam').name]",
-            "location": "[parameters('generalParam').deploy.location]",
-            "properties": "[parameters('resourceGroupParam').properties]"
+            // "name": "[parameters('resourceGroupParam').name]",
+            // "location": "[parameters('generalParam').deploy.location]",
+            // "properties": "[parameters('resourceGroupParam').properties]"
+            "name": "devops-iac-demo",
+            "location": "westus",            
         }
     ],
     "outputs": {
         "resourceGroupResourceId": {
             "type": "Object",
             "value": "[resourceId('MicrosMicrosoft.Resources/resourceGroups', parameters('resourceGroupParam').name)]"
-        },
-        "resourceGroupName": {
-            "type": "Object",
-            "value": "[parameters('resourceGroupParam').name]"
         }
+        // "resourceGroupName": {
+        //     "type": "Object",
+        //     "value": "[parameters('resourceGroupParam').name]"
+        // }
     }
 }
