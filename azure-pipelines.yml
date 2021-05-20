@@ -17,4 +17,4 @@ steps:
     csmFile: 'templates/subnet.json'
     csmParametersFile: 'parameters/subnet.json'
     deploymentMode: 'Incremental'
-    overrideParameters: '-virtualNetworkParam "hogehoge"'
+    overrideParameters: '-subnetParam "hogehoge"'
