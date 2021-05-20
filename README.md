@@ -45,3 +45,52 @@ steps:
 
 ## テスト実行
 設定値が正しいか確認するため、Pester を活用してテストを実行する。
+
+### Service Principal の作成
+テスト実行用アカウントとして、Service Principal を作成する。
+
+```powershell
+> az ad sp create-for-rbac -n "azure-pipelines-cicd" --role contributor
+{
+  "appId": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+  "displayName": "azure-pipelines-cicd",
+  "name": "http://azure-pipelines-cicd",
+  "password": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+  "tenant": "xxxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
+}
+```
+<b>※一度しか出力されないため、メモを取ること。</b>
+
+### Service Connection の作成
+Service Principal を Pipeline から使用するため、Service Connection を作成する。<br>
+[Project settings] > [Service connections] > [New service connection] を選択する。<br>
+[Azure Resource Manager] > [Service principal (manual)] を選択し、上記で出力された値を入力する。
+
+### Secret 情報を Variables に登録
+テストファイルで Service Principal を使用するため、Service Principal の各種値を環境変数に登録する。
+
+ - APPLICATIONIDURL
+ - CLIENTSECRET
+ - SUBSCRIPTIONID
+ - TENANTID
+
+これらは、テストファイルの中で下記のように参照される。
+
+```
+$tenantId = $env:TENANTID
+$subscriptionId = $env:SUBSCRIPTIONID
+$resourceGroupName = "koheisaitolearn"
+$clientSecret = $clientSecret_s
+$applicationIdUrl = $env:APPLICATIONIDURL
+
+Describe "テストのテスト" {
+
+    BeforeAll {
+        # Login as a Service Principal
+        az login --service-principal -u $applicationIdUrl -p $clientSecret --tenant $tenantId
+        az account set --subscription $subscriptionId
+    }
+
+    ・・・
+    
+```
