@@ -1,19 +1,4 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "generalParam":{
-            "value":{
-                "deploy": {
-                    "location": "japaneast"
-                }
-            }
-        },
-        "resourceGroupParam":{
-            "value":{
-                "name": "devops-pipelines-rg001",
-                "properties": {}
-            }
-        }
-    }
+    "contentVersion": "1.0.0.0"
 }
