@@ -4,17 +4,16 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
+steps:    
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
     azureResourceManagerConnection: 'Azure Internal Access Program WW Inside Sales_Subscription Cont(f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f)'
     subscriptionId: 'f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f'
     action: 'Create Or Update Resource Group'
-    resourceGroupName: 'VstsRG-pipeline-dotnet-11c4'
+    resourceGroupName: 'koheisaitolearn'
     location: 'West US'
     templateLocation: 'Linked artifact'
-    csmFile: 'templates/resourceGroup.json'
-    csmParametersFile: 'parameters/resourceGroup.json'
-    # overrideParameters: '-resourceGroupParam "hogehoge"'
+    csmFile: 'templates/subnet.json'
+    csmParametersFile: 'parameters/subnet.json'
     deploymentMode: 'Incremental'
