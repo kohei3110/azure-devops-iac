@@ -25,7 +25,7 @@ Describe "テストのテスト" {
             $resourceId_t           = "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/$resourceProviderName_t/$resourceName_t"
 
             $value_e     = "demoVMNic"
-            $rawResponse = az resource show --ids $resourceId_t | ConvertFrom-Json
+            $rawResponse = az resource show --ids $resourceId_t
             $currentStatus = $rawResponse.properties
 
         }
