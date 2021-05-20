@@ -10,3 +10,10 @@ git add .
 git commit -m "first commit"
 git push -u origin master
 ```
+
+![alt text](./images/devops-repos.png)
+
+## Pipeline の設定
+[Set up build] > [Starter pipeline] > [Save and run] を選択し、Pipeline を実行する。
+
+![alt text](./images/devops-running-jobs.png)
