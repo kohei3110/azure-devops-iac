@@ -26,17 +26,17 @@
             // "location": "[parameters('generalParam').deploy.location]",
             // "properties": "[parameters('resourceGroupParam').properties]"
             "name": "devops-iac-demo",
-            "location": "westus",            
+            "location": "westus"     
         }
-    ],
-    "outputs": {
-        "resourceGroupResourceId": {
-            "type": "Object",
-            "value": "[resourceId('MicrosMicrosoft.Resources/resourceGroups', parameters('resourceGroupParam').name)]"
-        }
+    ]
+    // "outputs": {
+    //     "resourceGroupResourceId": {
+    //         "type": "Object",
+    //         "value": "[resourceId('MicrosMicrosoft.Resources/resourceGroups', parameters('resourceGroupParam').name)]"
+    //     }
         // "resourceGroupName": {
         //     "type": "Object",
         //     "value": "[parameters('resourceGroupParam').name]"
         // }
-    }
+    // }
 }
