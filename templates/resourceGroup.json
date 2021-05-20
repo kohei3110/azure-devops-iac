@@ -29,11 +29,11 @@
     ],
     "outputs": {
         "resourceGroupResourceId": {
-            "type": "string",
+            "type": "Object",
             "value": "[resourceId('MicrosMicrosoft.Resources/resourceGroups', parameters('resourceGroupParam').name)]"
         },
         "resourceGroupName": {
-            "type": "string",
+            "type": "Object",
             "value": "[parameters('resourceGroupParam').name]"
         }
     }
