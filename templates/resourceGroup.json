@@ -6,13 +6,13 @@
     },
     "parameters": {
         "generalParam": {
-            "type": "object",
+            "type": "Object",
             "metadata": {
                 "description": "全般的なパラメータ"
             }
         },
         "resourceGroupParam":{
-            "type": "object",
+            "type": "Object",
             "metadata": {
                 "description": "リソースグループのパラメータ"
             }
