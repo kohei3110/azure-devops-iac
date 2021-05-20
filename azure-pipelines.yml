@@ -1,22 +1,19 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
+- azure-pipelines
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: echo heyhey!
-  displayName: 'Update azure-pipelines.yml'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+steps:    
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Azure Internal Access Program WW Inside Sales_Subscription Cont(f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f)'
+    subscriptionId: 'f0efe35e-b5a6-42ef-9a7a-e11fa99a1f8f'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'koheisaitolearn'
+    location: 'West US'
+    templateLocation: 'Linked artifact'
+    csmFile: 'templates/azuredeploy.json'
+    csmParametersFile: 'parameters/azuredeploy.json'
+    deploymentMode: 'Incremental' 

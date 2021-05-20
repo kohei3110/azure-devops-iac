@@ -1,20 +1,33 @@
-﻿foreach($arg in $args) {
-    Write-Output "Retrieved input: $arg"
-    $armOutputObj = $arg | ConvertFrom-Json
+﻿param(
+    [Parameter(Mandatory)]
+    [string]$clientSecret_s
+)
+# Pester のインストール
+Install-Module -Name Pester -Force -SkipPublisherCheck
 
-    $armOutputObj.PSObject.Properties | ForEach-Object {
-        $type = ($_.value.type).ToLower()
-        $keyname = "Output_"+$_.name
-        $value = $_.value.value
+$tenantId = $env:TENANTID
+$subscriptionId = $env:SUBSCRIPTIONID
+$resourceGroupName = "koheisaitolearn"
+$clientSecret = $clientSecret_s
 
-        if ($type -eq "securestring") {
-            Write-Output "##vso[task.setvariable variable=$keyname;isSecret=true]$value"
-            Write-Output "Added variable '$keyname' ('$type')"
-        } elseif ($type -eq "string") {
-            Write-Output "##vso[task.setvariable variable=$keyname]$value"
-            Write-Output "Added variable '$keyname' ('$type') with value '$value'"
-        } else {
-            Throw "Type '$type' is not supported for '$keyname'"
+Describe "テストのテスト" {
+
+    BeforeAll {
+        # Login as a Service Principal
+        az login --service-principal -u $applicationIdUrl -p $clientSecret --tenant $tenantId
+        az account set --subscription $subscriptionId
+    }
+
+    Context "テスト" {
+        It "テスト1" {
+            $resourceProviderName_t = "Microsoft.Network/networkInterfaces"
+            $resourceName_t         = "demoVMNic"
+            $resourceId_t           = "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/$resourceProviderName_t/$resourceName_t"
+
+            $value_e     = "demoVMNic"
+            $rawResponse = az resource show --ids $resourceId_t
+            $currentStatus = $rawResponse.properties
+
         }
     }
 }
