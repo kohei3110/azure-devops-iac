@@ -16,5 +16,5 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: 'templates/resourceGroup.json'
     csmParametersFile: 'parameters/resourceGroup.json'
-    overrideParameters: '-resourceName "hogehoge"'
+    overrideParameters: '-resourceGroupParam "hogehoge"'
     deploymentMode: 'Incremental'
